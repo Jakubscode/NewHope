@@ -1,8 +1,6 @@
 const express = require('express')
 const _admin = require('../api/admin.js')
-const _user = "admin"
-const _pass = "admin"
-const token = "2093klsdmkljio4358ioawdksml"
+//const token = "2093klsdmkljio4358ioawdksml"
 
 module.exports = (app) => {
   const admin = _admin(app)
@@ -40,19 +38,37 @@ module.exports = (app) => {
     res.json({
       challenges : [
         {
+          id : "spfajg3049",
           name : "challenges 1",
           description : "Lorem Ipsum"
         },
         {
+          id : "sdfsdf",
           name : "challenges 2",
           description : "Lorem Ipsum"
         },
         {
+          id : "asdasd",
           name : "challenges 3",
           description : "Lorem Ipsum"
         }
       ]
     })
+  })
+  router.get("/challenges/:id", (req,res) => {
+    const id = req.params.id
+    res.json({
+      challenge: {
+          id : id,
+          name : "challenges 1",
+          description : "Lorem Ipsum"
+      }
+    })
+  })
+  router.post("/challenges", (req, res) => {
+    console.log(req.body)
+    //console.log(req.body)
+    res.send("yeah")
   })
   // router.post("/newadmin", (req,res) => {
   //   console.log(app.models.Admin)

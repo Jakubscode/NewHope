@@ -6,6 +6,7 @@ module.exports = function(mongoose) {
     description : String,
     users : [{ type: Schema.Types.ObjectId, ref : 'User'}],
     payments : [{ type: Schema.Types.ObjectId, ref : 'Payment'}],
+    image_url : String
   });
 
   // Challenge.pre('save', function(next) {

@@ -21,7 +21,9 @@ const auth = (app) => async (token) => {
 	console.log(admin)
 	return admin != null
 }
-
+const addChallenge = (app) => async (title, description, image) => {
+	
+}
 module.exports = (app) => ({
 	login : login(app),
 	auth : auth(app)

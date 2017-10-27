@@ -48,7 +48,7 @@ app.use("/user/", routes.user(app))
 
 
 /* MONGO CONNECT */
-const port = 3000
+const port = 4000
 mongoose.connect('mongodb://admin:TomeczekJestSuper1@ds137435.mlab.com:37435/newhope', { useMongoClient: true })
     .then((db) => {
         app.listen(port, () => {

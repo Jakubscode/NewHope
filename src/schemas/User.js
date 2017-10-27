@@ -7,7 +7,6 @@ module.exports = function(mongoose) {
     fbID : String,
     challenges : [{ type: Schema.Types.ObjectId, ref : 'UserChallenge'}],
     payments : [{ type: Schema.Types.ObjectId, ref : 'Payment'}],
-
   });
 
   // User.pre('save', function(next) {

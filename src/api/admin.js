@@ -2,8 +2,6 @@ const crypto = require('crypto');
 
 const secret = 'abcdefg';
 
-
-
 const login = (app) => async (user, pass)  => {
 	const hash = crypto.createHmac('sha256', pass)
    .update('I love cupcakes')
@@ -18,8 +16,10 @@ const login = (app) => async (user, pass)  => {
 		success : false
 	}
 }
-const auth = (app) => (token) =>{
-
+const auth = (app) => async (token) => {
+	const admin = await app.models.Admin.findOne({token}).exec()
+	console.log(admin)
+	return admin != null
 }
 
 module.exports = (app) => ({

@@ -12,6 +12,7 @@ const path = require('path')
 const crypto = require('crypto')
 const cors = require('cors')
 const formData = require("express-form-data");
+const bearerToken = require('express-bearer-token');
 
 // /* APP MODULES */
 
@@ -24,7 +25,8 @@ app.use(cors())
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({ extended: true }))
-
+ 
+app.use(bearerToken());
 
 mongoose.Promise = global.Promise;
 
@@ -39,18 +41,15 @@ app.models = {
     Challenge : Challenge(mongoose),
     Payment : null,
     Message : null,
-
 };
 
 
 /* ROUTES */
 const routes = {
     admin : require('./src/routes/admin.js'),
-    challenge : require('./src/routes/challenge.js'),
     user : require('./src/routes/user.js'),
 }
 app.use("/admin/", routes.admin(app))
-app.use("/challenges/", routes.challenge(app))
 app.use("/user/", routes.user(app))
 
 

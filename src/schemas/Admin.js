@@ -8,12 +8,12 @@ module.exports = function(mongoose) {
     token : String
   });
 
-  Admin.pre('save', function(next) {
+  // Admin.pre('save', function(next) {
     
-  });
-  Admin.post('save', function (next) {
+  // });
+  // Admin.post('save', function (next) {
     
-  })
+  // })
 
   return mongoose.model('Admin', Admin)
 };

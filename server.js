@@ -18,14 +18,10 @@ const formData = require("express-form-data");
 app.use(cors())
 
 
-
-
 /* CONFIG */
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({ extended: true }))
-
-
 mongoose.Promise = global.Promise;
 
 /* MODELS */

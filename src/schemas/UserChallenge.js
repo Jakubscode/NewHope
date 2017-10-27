@@ -11,6 +11,7 @@ module.exports = function(mongoose) {
     done : {
 
     },
+    accepted : Boolean,
     watchers : [{ type: Schema.Types.ObjectId, ref : 'User'}],
 
   });

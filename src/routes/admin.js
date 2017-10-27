@@ -7,6 +7,18 @@ const token = "2093klsdmkljio4358ioawdksml"
 module.exports = (app) => {
   const admin = _admin(app)
   const router = express.Router();
+  router.use(async (req, res, next) => {
+    const token = req.token;
+    const auth = await admin.auth(token)
+    console.log(req.path, auth)
+    if (auth || req.path == '/login') {
+      next()
+    }
+    else {
+      res.status(403)
+      res.end()
+    }
+  });
   router.post("/login", async (req,res) => {
     const user = req.body.user
     const pass = req.body.pass
@@ -18,6 +30,7 @@ module.exports = (app) => {
       })
     }
     else {
+      res.status(403)
       res.json({
         success: false,
       })

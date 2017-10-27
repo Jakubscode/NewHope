@@ -30,11 +30,13 @@ mongoose.Promise = global.Promise;
 
 /* MODELS */
 Admin = require('./src/schemas/Admin.js')
+User = require('./src/schemas/User.js')
+Challenge = require('./src/schemas/Challenge.js')
 
 app.models = {
     Admin : Admin(mongoose),
-    User : null,
-    Challenge : null,
+    User : User(mongoose),
+    Challenge : Challenge(mongoose),
     Payment : null,
     Message : null,
 

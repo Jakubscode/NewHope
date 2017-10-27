@@ -12,20 +12,10 @@ const path = require('path')
 const crypto = require('crypto')
 const cors = require('cors')
 const formData = require("express-form-data");
-// const multipartyOptions = {
-//   autoFiles: true
-// };
-// // parse a data with connect-multiparty. 
-// app.use(formData.parse(multipartyOptions));
-// // clear all empty files (size == 0)
-// app.use(formData.format());
-// // change file objects to node stream.Readable 
-// app.use(formData.stream());
-// // union body and files
-// app.use(formData.union());
+
 // /* APP MODULES */
 
-// app.use(cors())
+app.use(cors())
 
 
 
@@ -35,17 +25,6 @@ const formData = require("express-form-data");
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({ extended: true }))
 
-
-// const multerStorage = multer.diskStorage({
-//     destination: './uploads/',
-//     filename: function(req, file, cb) {
-//         crypto.pseudoRandomBytes(16, function(err, raw) {
-//             if (err) return cb(err)
-
-//             cb(null, raw.toString('hex') + path.extname(file.originalname))
-//         })
-//     }
-// })
 
 mongoose.Promise = global.Promise;
 
@@ -59,9 +38,13 @@ app.models = {
 
 /* ROUTES */
 const routes = {
-    admin : require('./src/routes/admin.js')
+    admin : require('./src/routes/admin.js'),
+    challenge : require('./src/routes/challenge.js'),
+    user : require('./src/routes/user.js'),
 }
 app.use("/admin/", routes.admin())
+app.use("/challenges/", routes.challenge())
+app.use("/user/", routes.user())
 
 
 /* MONGO CONNECT */

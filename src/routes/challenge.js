@@ -6,7 +6,7 @@ module.exports = () => {
   const router = express.Router();
   router.post("/", (req,res) => {
     res.json({
-        users : true
+        challenges : true
     })
   })
   return router

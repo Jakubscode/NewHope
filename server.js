@@ -42,9 +42,9 @@ const routes = {
     challenge : require('./src/routes/challenge.js'),
     user : require('./src/routes/user.js'),
 }
-app.use("/admin/", routes.admin())
-app.use("/challenges/", routes.challenge())
-app.use("/user/", routes.user())
+app.use("/admin/", routes.admin(app))
+app.use("/challenges/", routes.challenge(app))
+app.use("/user/", routes.user(app))
 
 
 /* MONGO CONNECT */

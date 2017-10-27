@@ -2,7 +2,6 @@ module.exports = function(mongoose) {
   const Schema = mongoose.Schema;
 
   const Admin = new Schema({
-    //employee:  { type: Schema.Types.ObjectId, ref: 'Employees' },
     login : String,
     pass : String,
     token : String

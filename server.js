@@ -29,9 +29,14 @@ app.use(bodyParser.json({ extended: true }))
 mongoose.Promise = global.Promise;
 
 /* MODELS */
+Admin = require('./src/schemas/Admin.js')
 
 app.models = {
-    
+    Admin : Admin(mongoose),
+    User : null,
+    Challenge : null,
+    Payment : null,
+    Message : null,
 
 };
 

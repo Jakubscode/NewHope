@@ -7,11 +7,11 @@ const mongoose = require('mongoose')
 
 
 
-const loginUser = (app) => async (fbID, accessToken) => {
+const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
     let userName;
     FB.setAccessToken(accessToken);
     const User = app.models.User
-    const imgData = await Promisify(FB.api, `/${fbID}/picture?redirect=false&type=normal`)
+    const [friends, imgData] = await Promise.all([Promisify(FB.api, `/${fbID}/friends`),Promisify(FB.api, `/${fbID}/picture?redirect=false&type=normal`)])
     const result = await User.findOne({ fbID }).exec()
     userName =  result ? result.name : ''
     if (result === null) {
@@ -20,7 +20,9 @@ const loginUser = (app) => async (fbID, accessToken) => {
         const addedUser = new User({
             name: userName,
             fbToken: accessToken,
+            firebaseToken,
             fbID,
+            fbFriends: friends.data.map(friend => friend.id),
             img_url: imgData.data.url,
             challenges: [],
             payments: []
@@ -29,14 +31,12 @@ const loginUser = (app) => async (fbID, accessToken) => {
     } else {
         await User.update({fbID}, {$set: {img_url: imgData.data.url, fbToken: accessToken}}).exec()
     }
-
         return { imgUrl: imgData.data.url, name: userName }
 }
 
 
-const getUserChallanges = app => async fbID => {
+const getUserChallenges = app => async fbID => {
     const User = app.models.User;
-    const UserChallange = app.models.UserChallange;
     const userData = await User.findOne({ fbID })
         .populate({
             path : 'challenges',
@@ -47,8 +47,9 @@ const getUserChallanges = app => async fbID => {
     })
 
         .exec()
-    const userChallangesData = userData.challenges.map(challenge => ({
+    const userChallengesData = userData.challenges.map(challenge => ({
             id: challenge.challenge_id._id,
+            challenge_id: challenge._id,
             title: challenge.challenge_id.title,
             accepted: challenge.accepted,
             description: challenge.challenge_id.description,
@@ -57,8 +58,8 @@ const getUserChallanges = app => async fbID => {
         })
     )
 
-    const acceptedChallenges = userChallangesData.filter(challengeData => challengeData.accepted)
-    const notAcceptedChallenges = userChallangesData.filter(challengeData => !challengeData.accepted)
+    const acceptedChallenges = userChallengesData.filter(challengeData => challengeData.accepted)
+    const notAcceptedChallenges = userChallengesData.filter(challengeData => !challengeData.accepted)
     return {
         acceptedChallenges,
         notAcceptedChallenges
@@ -103,6 +104,6 @@ getUserMessages = (app) => async (fbID) => {
 
 module.exports = (app) => ({
     login : loginUser(app),
-    getUserChallanges: getUserChallanges(app),
-    getUserMessages : getUserMessages(app)
+    getUserMessages : getUserMessages(app),
+    getUserChallenges: getUserChallenges(app)
 })

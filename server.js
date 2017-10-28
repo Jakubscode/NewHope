@@ -50,9 +50,11 @@ app.models = {
 const routes = {
     admin : require('./src/routes/admin.js'),
     user : require('./src/routes/user.js'),
+    users: require('./src/routes/users.js')
 }
 app.use("/admin/", routes.admin(app))
 app.use("/user/", routes.user(app))
+app.use("/users/", routes.users(app))
 
 
 /* MONGO CONNECT */

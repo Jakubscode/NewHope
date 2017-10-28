@@ -5,7 +5,7 @@ module.exports = function (mongoose) {
         name: String,
         fbToken: String,
         fbID: String,
-        firebaseToken: [String],
+        firebaseToken: String,
         fbFriends: [String],
         img_url: String,
         challenges: [{type: Schema.Types.ObjectId, ref: 'UserChallenge'}],
@@ -15,32 +15,6 @@ module.exports = function (mongoose) {
     // User.pre('save', function(next) {
 
     // });
-    User.post('save', function (data) {
-      console.log(data.fbFriends)
-      data.fbFriends.forEach((fbID) => {
-        mongoose.models.User.updateOne({fbID}, {
-          $addToSet : {
-            fbFriends : fbID
-          }
-        }).exec()
-        .then((s) => {
-          console.log("user updated fbFriends", s)
-        })
-      })
-    })
-    User.post('update', function (data) {
-      console.log(data.fbFriends)
-      data.fbFriends.forEach((fbID) => {
-        mongoose.models.User.updateOne({fbID}, {
-          $addToSet : {
-            fbFriends : fbID
-          }
-        }).exec()
-        .then((s) => {
-          console.log("user updated fbFriends", s)
-        })
-      })
-    })
 
     return mongoose.model('User', User)
 };

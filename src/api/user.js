@@ -27,9 +27,21 @@ const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
             challenges: [],
             payments: []
         });
+            const fbFriends = friends.data.map(friend => friend.id)
+            fbFriends.forEach((fbID) => {
+                mongoose.models.User.updateOne({fbID}, {
+                    $addToSet : {
+                        fbFriends : fbID
+                    }
+                }).exec()
+                .then((s) => {
+                    console.log("user updated fbFriends", s)
+                })
+            })
         await addedUser.save()
     } else {
-        await User.update({ fbID }, {$set: {img_url: imgData.data.url, fbFriends: friends.data.map(friend => friend.id), fbToken: accessToken}}).exec()
+
+        await User.update({ fbID }, {$set: {img_url: imgData.data.url, firebaseToken, fbFriends: friends.data.map(friend => friend.id), fbToken: accessToken}}).exec()
     }
         return { imgUrl: imgData.data.url, name: userName }
 }

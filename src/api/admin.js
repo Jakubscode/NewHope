@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const path = require('path')
+const fs = require('fs')
 
 const secret = 'abcdefg';
 
@@ -19,12 +21,80 @@ const login = (app) => async (user, pass)  => {
 const auth = (app) => async (token) => {
 	const admin = await app.models.Admin.findOne({token}).exec()
 	console.log(admin)
-	return admin != null
+	return admin != null 
+	? {
+		_id : admin._id
+	}
+	: null
 }
-const addChallenge = (app) => async (title, description, image) => {
+const addChallenge = (app) => async (title, description, image, users, inviter_id) => { //notify all new challenge
+	console.log(title, description, image)
+	const base64Data = image.replace(/^data:image\/png;base64,/, "");
+	const imageUrl = path.join("/uploads/challenges/", `${title}${Date.now()}.png`)
+	const imagePath = path.join(__dirname , "../../", imageUrl)
+	console.log(users.constructor)
+	if (users.constructor == String) {
+		users = [users]
+	}
+	require("fs").writeFile(imagePath, base64Data, 'base64', function(err) {
+	  console.log(err);
+	});
+	const challenge = new app.models.Challenge({
+		title,
+		description,
+		image_url : imageUrl,
+		users
+	})
+	const status = await challenge.save()
+	console.log(inviter_id, users)
+	await Promise.all(users.map((user_id) => {
+			const newCh = new app.models.UserChallenge({
+			    user_id: user_id,
+			    inviter_id : {
+			      kind : 'Admin',
+			      user : inviter_id
+			    },
+			    challenge_id : status._id,
+			    done : {
+			    	status : false,
+			    	image : ""
+			    },
+			    accepted : false,
+			    watchers : [],
+			})
+			return newCh.save()
+	}))
+	return status
+	// Database request, return saved data
 	
+}
+const getChallenges = (app) => async () => { //all challenges and users in challenges that paid
+	return app.models.Challenge.find({})
+		.populate('users')
+		.populate('payments')
+		.exec()
+}
+const getUser = (app) => async (user_id) => { // all data , messages, payments
+	return app.models.User.findOne({_id : user_id})
+		.populate('challenges')
+		.populate('payments')
+		.exec()
+}
+const getMessages = (app) => async () => {
+
+}
+const sendMesage = (app) => async (data) => { //data.challenge_id, data.user_id, data.all, data.image
+
+}
+const findUser = (app) => async(query) => {
+	console.log(query)
+	return app.models.User.find({"name" : new RegExp(query, "i")}).exec()
 }
 module.exports = (app) => ({
 	login : login(app),
-	auth : auth(app)
+	auth : auth(app),
+	addChallenge : addChallenge(app),
+	findUser : findUser(app),
+	getChallenges : getChallenges(app),
+	getUser : getUser(app)
 })

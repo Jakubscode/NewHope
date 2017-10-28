@@ -9,7 +9,10 @@ module.exports = (app) => {
     const token = req.token;
     const auth = await admin.auth(token)
     console.log(req.path, auth)
-    if (auth || req.path == '/login') {
+    if (auth != null || req.path == '/login') {
+      if (auth != null) {
+        req.admin_id = auth._id
+      }
       next()
     }
     else {
@@ -34,26 +37,10 @@ module.exports = (app) => {
       })
     }
   })
-  router.get("/challenges", (req,res) => {
-    res.json({
-      challenges : [
-        {
-          id : "spfajg3049",
-          name : "challenges 1",
-          description : "Lorem Ipsum"
-        },
-        {
-          id : "sdfsdf",
-          name : "challenges 2",
-          description : "Lorem Ipsum"
-        },
-        {
-          id : "asdasd",
-          name : "challenges 3",
-          description : "Lorem Ipsum"
-        }
-      ]
-    })
+  router.get("/challenges", async (req,res) => {
+    const challenges  = await admin.getChallenges()
+    console.log(challenges)
+    res.json(challenges)
   })
   router.get("/challenges/:id", (req,res) => {
     const id = req.params.id
@@ -65,10 +52,21 @@ module.exports = (app) => {
       }
     })
   })
-  router.post("/challenges", (req, res) => {
-    console.log(req.body)
-    //console.log(req.body)
-    res.send("yeah")
+  router.post("/challenges", async (req, res) => {
+    const name = req.body.name
+    const description = req.body.description
+    const image = req.body.image
+    const users = req.body.users
+    const status = await admin.addChallenge(name, description, image, users, req.admin_id)
+    res.json(status)
+  })
+  router.post("/find", async (req, res) => {
+    const users = await admin.findUser(req.body.name)
+    res.send(users)
+  })
+  router.get("/user/:id", async (req, res) => {
+    const user = await admin.getUser(req.params.id)
+    res.send(user)
   })
   // router.post("/newadmin", (req,res) => {
   //   console.log(app.models.Admin)

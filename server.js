@@ -32,13 +32,17 @@ mongoose.Promise = global.Promise;
 Admin = require('./src/schemas/Admin.js')
 User = require('./src/schemas/User.js')
 Challenge = require('./src/schemas/Challenge.js')
+Payment = require('./src/schemas/Payment.js')
+Message = require('./src/schemas/Message.js')
+UserChallenge = require('./src/schemas/UserChallenge.js')
 
 app.models = {
     Admin : Admin(mongoose),
     User : User(mongoose),
     Challenge : Challenge(mongoose),
-    Payment : null,
-    Message : null,
+    Payment : Payment(mongoose),
+    Message : Message(mongoose),
+    UserChallenge : UserChallenge(mongoose),
 };
 
 
@@ -52,7 +56,8 @@ app.use("/user/", routes.user(app))
 
 
 /* MONGO CONNECT */
-const port = 4000
+const port = parseInt(process.argv[2]) == process.argv[2]? process.argv[2] :  3000
+console.log(port)
 mongoose.connect('mongodb://admin:TomeczekJestSuper1@ds137435.mlab.com:37435/newhope', { useMongoClient: true })
     .then((db) => {
         app.listen(port, () => {

@@ -9,9 +9,10 @@ module.exports = function(mongoose) {
     amount : Number
   });
 
-  // Payment.pre('save', function(next) {
-    
-  // });
+  Payment.pre('save', function(next) {
+    this.date = new Date()
+    next()
+  });
   // Payment.post('save', function (next) {
     
   // })

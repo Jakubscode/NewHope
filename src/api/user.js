@@ -11,24 +11,25 @@ const loginUser = (app) => async (fbID, accessToken) => {
     let userName;
     FB.setAccessToken(accessToken);
     const User = app.models.User
+    const imgData = await Promisify(FB.api, `/${fbID}/picture?redirect=false&type=normal`)
     const result = await User.findOne({ fbID }).exec()
     userName =  result ? result.name : ''
     if (result === null) {
         const userData = await Promisify(FB.api, `/${fbID}`)
         userName = userData.name
-        var addedUser = new User({
+        const addedUser = new User({
             name: userName,
             fbToken: accessToken,
             fbID,
+            img_url: imgData.data.url,
             challenges: [],
             payments: []
         });
         await addedUser.save()
     } else {
-        await User.update({ fbID }, { $set: { fbToken: accessToken }}).exec()
+        await User.update({fbID}, {$set: {img_url: imgData.data.url, fbToken: accessToken}}).exec()
     }
 
-        const imgData = await Promisify(FB.api,`/${fbID}/picture?redirect=false&type=normal`)
         return { imgUrl: imgData.data.url, name: userName }
 }
 
@@ -37,10 +38,31 @@ const getUserChallanges = app => async fbID => {
     const User = app.models.User;
     const UserChallange = app.models.UserChallange;
     const userData = await User.findOne({ fbID })
-        .populate('challenges')
+        .populate({
+            path : 'challenges',
+            populate : { path:'challenge_id' }
+        }).populate({
+        path: 'challanges',
+        populate : {path: 'inviter_id'}
+    })
+
         .exec()
-    console.log(userData);
-    // const  accepted = await Promise.all(userData.challenges.map(userChallange => userChallange.)
+    const userChallangesData = userData.challenges.map(challenge => ({
+            id: challenge.challenge_id._id,
+            title: challenge.challenge_id.title,
+            accepted: challenge.accepted,
+            description: challenge.challenge_id.description,
+            imgUrl: challenge.challenge_id.image_url,
+            inviter: challenge.inviter_id.user.name || 'ADMIN'
+        })
+    )
+
+    const acceptedChallenges = userChallangesData.filter(challengeData => challengeData.accepted)
+    const notAcceptedChallenges = userChallangesData.filter(challengeData => !challengeData.accepted)
+    return {
+        acceptedChallenges,
+        notAcceptedChallenges
+    }
 }
 
 

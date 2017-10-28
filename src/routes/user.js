@@ -50,5 +50,10 @@ module.exports = (app) => {
         res.statusCode = 200
         res.send(response)
     })
+    router.post('/:userId/doChallenge', async (req,res) => {
+    		const response = await _user.doChallenge(req.body.userChallengeId, req.body.image)
+        res.statusCode = 200
+        res.send(response)
+    })
     return router
 }

@@ -5,7 +5,8 @@ const APP_SECRET = '4630828c4bedc069d86fdc688d603921'
 const userImgSize = 100
 const mongoose = require('mongoose')
 
-
+const path = require('path')
+const fs = require('fs')
 
 const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
     let userName;
@@ -151,6 +152,24 @@ const getUserPayments = (app) => async (fbID) => {
         .exec()
     return payments
 }
+const doChallenge = app => async (userChallengeId, image) => {
+    const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
+    const imageUrl = path.join("/uploads/userChallenges/", `${userChallengeId}.jpeg`)
+    const imagePath = path.join(__dirname , "../../", imageUrl)
+    require("fs").writeFile(imagePath, base64Data, 'base64', function(err) {
+      console.log(err);
+    });
+
+    const result =  await app.models.UserChallenge.updateOne({_id: userChallengeId}, {
+        $set : {
+            done: { 
+                status : true,
+                image : imageUrl
+            }
+        }
+    }).exec()
+    return result;
+}
 module.exports = (app) => ({
     login : loginUser(app),
     getUserMessages : getUserMessages(app),
@@ -158,5 +177,6 @@ module.exports = (app) => ({
     getChallenge: getChallenge(app),
     acceptChallenge: acceptChallenge(app),
     commitPayment : commitPayment(app),
-    getUserPayments : getUserPayments(app)
+    getUserPayments : getUserPayments(app),
+    doChallenge : doChallenge(app)
 })

@@ -1,11 +1,11 @@
-const getAllUsers = app => async ()  => {
+const getAllFriendsUsers = app => async (fbID)  => {
     const User = app.models.User;
-    const usersData = await User.find({}).exec()
+    const friends = await User.find()
     return { usersData }
 }
 
 
 
 module.exports = (app) => ({
-    getAllUser: getAllUsers(app)
+    getAllFriendsUsers: getAllFriendsUsers(app)
 })

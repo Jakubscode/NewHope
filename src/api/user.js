@@ -29,7 +29,7 @@ const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
         });
         await addedUser.save()
     } else {
-        await User.update({fbID}, {$set: {img_url: imgData.data.url, fbToken: accessToken}}).exec()
+        await User.update({ fbID }, {$set: {img_url: imgData.data.url, fbFriends: friends.data.map(friend => friend.id), fbToken: accessToken}}).exec()
     }
         return { imgUrl: imgData.data.url, name: userName }
 }

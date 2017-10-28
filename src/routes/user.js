@@ -15,6 +15,11 @@ module.exports = (app) => {
         res.statusCode = 200
         res.send(response)
     })
+    router.get('/:userId/challenges/:idChallenge', async (req, res) => {
+        const response = await _user.getChallenge(req.params.idChallenge)
+        res.statusCode = 200
+        res.send(response)
+    })
     router.get('/:userId/messages', async (req,res) => {
         const response = await _user.getUserMessages(req.params.userId)
         res.statusCode = 200

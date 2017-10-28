@@ -60,8 +60,8 @@ const getUserChallenges = app => async fbID => {
 
         .exec()
     const userChallengesData = userData.challenges.map(challenge => ({
-            id: challenge.challenge_id._id,
-            challenge_id: challenge._id,
+            challange_id: challenge.challenge_id._id,
+            _id: challenge._id,
             title: challenge.challenge_id.title,
             accepted: challenge.accepted,
             description: challenge.challenge_id.description,
@@ -79,7 +79,7 @@ const getUserChallenges = app => async fbID => {
 }
 
 
-getUserMessages = (app) => async (fbID) => {
+const getUserMessages = (app) => async (fbID) => {
     const userData = await app.models.User.findOne({ fbID })
         .populate({
             path : "challenges",
@@ -114,8 +114,16 @@ getUserMessages = (app) => async (fbID) => {
 
 }
 
+
+const getChallenge = app => async challengeId => {
+    const challenge = await app.models.Challenge.findOne({_id: challengeId}).exec()
+    return { challenge }
+}
+
+
 module.exports = (app) => ({
     login : loginUser(app),
     getUserMessages : getUserMessages(app),
-    getUserChallenges: getUserChallenges(app)
+    getUserChallenges: getUserChallenges(app),
+    getChallenge: getChallenge(app)
 })

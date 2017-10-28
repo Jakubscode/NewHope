@@ -20,6 +20,7 @@ const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
         const addedUser = new User({
             name: userName,
             fbToken: accessToken,
+            firebaseToken,
             fbID,
             fbFriends: friends.data.map(friend => friend.id),
             img_url: imgData.data.url,

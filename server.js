@@ -54,7 +54,7 @@ const routes = {
 }
 app.use("/admin/", routes.admin(app))
 app.use("/user/", routes.user(app))
-app.use("/users/" routes.users(app))
+app.use("/users/", routes.users(app))
 
 
 /* MONGO CONNECT */

@@ -30,7 +30,7 @@ const auth = (app) => async (token) => {
 const addChallenge = (app) => async (title, description, image, users, inviter_id) => { //notify all new challenge
 	console.log(title, description, image)
 	const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
-	const imageUrl = path.join("/uploads/challenges/", `${title}${Date.now()}.jpeg`)
+	const imageUrl = path.join("/uploads/challenges/", `${Date.now() + "" + Math.random()}.jpeg`)
 	const imagePath = path.join(__dirname , "../../", imageUrl)
 	console.log(users.constructor)
 	if (users.constructor == String) {
@@ -55,10 +55,8 @@ const addChallenge = (app) => async (title, description, image, users, inviter_i
 			      user : inviter_id
 			    },
 			    challenge_id : status._id,
-			    done : {
-			    	status : false,
-			    	image : ""
-			    },
+				status : false,
+			    image : "",
 			    accepted : false,
 			    watchers : [],
 			})
@@ -76,13 +74,18 @@ const getChallenges = (app) => async () => { //all challenges and users in chall
 			populate : {
 				path : "user_id"
 			}
-		}) // TODO populate by user
+		})
 		.exec()
 }
 const getChallenge = (app) => async (challenge_id) => { //all challenges and users in challenges that paid
 	return app.models.Challenge.find({_id : challenge_id})
 		.populate('users')
-		.populate('payments')
+		.populate({
+			path  :'payments',
+			populate : {
+				path : "user_id"
+			}
+		})
 		.exec()
 }
 const getUser = (app) => async (user_id) => { // all data , messages, payments
@@ -90,6 +93,10 @@ const getUser = (app) => async (user_id) => { // all data , messages, payments
 		.populate('challenges')
 		.populate('payments')
 		.exec()
+}
+const getAllUsers = (app) => async () => { // all data , messages, payments
+    return app.models.User.find({})
+    .exec()
 }
 const getMessages = (app) => async () => {
 	return app.models.Message.find({},[], {sort : {date : -1}})
@@ -99,12 +106,16 @@ const getMessages = (app) => async () => {
 }
 const sendMessage = (app) => async (data) => { //data.challenge_id, data.user_id, data.all, data.image
 	console.log(data)
-	const base64Data = data.image.replace(/^data:image\/jpeg;base64,/, "");
-	const imageUrl = path.join("/uploads/messages/", `${Date.now() + "" + Math.random()}.jpeg`)
-	const imagePath = path.join(__dirname , "../../", imageUrl)
-	require("fs").writeFile(imagePath, base64Data, 'base64', function(err) {
-	  console.log(err);
-	});
+	let imageUrl = null
+	if (data.image) {
+        const base64Data = data.image.replace(/^data:image\/jpeg;base64,/, "");
+        imageUrl = path.join("/uploads/messages/", `${Date.now() + "" + Math.random()}.jpeg`)
+        const imagePath = path.join(__dirname , "../../", imageUrl)
+        require("fs").writeFile(imagePath, base64Data, 'base64', function(err) {
+            console.log(err);
+        });
+	}
+
 	const challenge = new app.models.Message({
 		topic : data.topic,
 		text : data.text,
@@ -127,5 +138,6 @@ module.exports = (app) => ({
 	getUser : getUser(app),
 	getChallenge : getChallenge(app),
 	sendMessage : sendMessage(app),
-	getMessages : getMessages(app)
+	getMessages : getMessages(app),
+	getAllUsers : getAllUsers(app)
 })

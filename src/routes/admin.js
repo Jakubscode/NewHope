@@ -62,6 +62,11 @@ module.exports = (app) => {
     const users = await admin.findUser(req.body.name)
     res.send(users)
   })
+  router.get("/user", async (req, res) => {
+      const user = await admin.getAllUsers()
+      res.send(user)
+  })
+
   router.get("/user/:id", async (req, res) => {
     const user = await admin.getUser(req.params.id)
     res.send(user)

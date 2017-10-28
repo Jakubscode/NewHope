@@ -9,9 +9,8 @@ module.exports = function(mongoose) {
       user : { type: Schema.Types.ObjectId, refPath : 'inviter_id.kind'},
     },
     challenge_id : { type: Schema.Types.ObjectId, ref : 'Challenge'},
-    done : {
-
-    },
+    status : Boolean,
+    image : String,
     accepted : Boolean,
     watchers : [{ type: Schema.Types.ObjectId, ref : 'User'}],
 

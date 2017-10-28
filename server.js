@@ -21,8 +21,8 @@ app.use(cors())
 
 /* CONFIG */
 
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json({ extended: true }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
+app.use(bodyParser.json({ limit:'50mb', extended: true }))
 app.use('/uploads', express.static('uploads'))
 app.use(bearerToken());
 
@@ -58,7 +58,7 @@ app.use("/users/", routes.users(app))
 
 
 /* MONGO CONNECT */
-const port = parseInt(process.argv[2]) == process.argv[2]? process.argv[2] :  3000
+const port = parseInt(process.argv[2]) == process.argv[2]? process.argv[2] :  4000
 console.log(port)
 mongoose.connect('mongodb://admin:TomeczekJestSuper1@ds137435.mlab.com:37435/newhope', { useMongoClient: true })
     .then((db) => {

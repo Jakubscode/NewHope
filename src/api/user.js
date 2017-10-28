@@ -12,7 +12,7 @@ const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
     let userName;
     FB.setAccessToken(accessToken);
     const User = app.models.User
-    const [friends, imgData] = await Promise.all([Promisify(FB.api, `/${fbID}/friends`),Promisify(FB.api, `/${fbID}/picture?redirect=false&type=normal`)])
+    const [friends, imgData] = await Promise.all([Promisify(FB.api, `/${fbID}/friends`),Promisify(FB.api, `/${fbID}/picture?redirect=false&type=large`)])
     const result = await User.findOne({ fbID }).exec()
     userName =  result ? result.name : ''
     if (result === null) {
@@ -60,15 +60,17 @@ const getUserChallenges = app => async fbID => {
 
         .exec()
     console.log(userData);
-    const userChallengesData = userData.challenges.map(challenge => ({
+    const userChallengesData = userData.challenges.map(challenge => { console.log(challenge); return ({
             challenge_id: challenge.challenge_id._id,
             _id: challenge._id,
             title: challenge.challenge_id.title,
+            status: challenge.status,
+            image: challenge.image,
             accepted: challenge.accepted,
             description: challenge.challenge_id.description,
             imgUrl: challenge.challenge_id.image_url,
             inviter: challenge.inviter_id.user.name || 'ADMIN'
-        })
+        })}
     )
 
     const acceptedChallenges = userChallengesData.filter(challengeData => challengeData.accepted)
@@ -153,12 +155,13 @@ const getUserPayments = (app) => async (fbID) => {
 
     const payments = await app.models.Payment.find({user_id : user.id})
         .populate('challenge_id')
-    .lean()
+        .lean()
         .exec()
+    console.log(payments)
     return payments.map(payment => {
         return {
             ...payment,
-            challengeTitle: payment.challenge_id.title
+            challengeTitle: payment.challenge_id ? payment.challenge_id.title : "Bezinteresowna Wpłata"
         }
     })
 }
@@ -171,14 +174,12 @@ const doChallenge = app => async (userChallengeId, image) => {
     });
     const result =  await app.models.UserChallenge.updateOne({_id: userChallengeId}, {
         $set : {
-            done: { 
-                status : true,
-                image : imageUrl
-            }
+            status : true,
+            image : imageUrl,
         }
     }).exec()
 
-    return result;
+    return await app.models.UserChallenge.findOne({_id : userChallengeId}).exec()
 }
 module.exports = (app) => ({
     login : loginUser(app),

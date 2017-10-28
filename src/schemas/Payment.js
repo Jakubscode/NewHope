@@ -5,7 +5,8 @@ module.exports = function(mongoose) {
     user_id : { type: Schema.Types.ObjectId, ref : 'User'},
     challenge_id: { type: Schema.Types.ObjectId, ref : 'Challenge'},
     user_challenge_id : { type: Schema.Types.ObjectId, ref : 'UserChallenge'},
-    date : Date
+    date : Date,
+    amount : Number
   });
 
   // Payment.pre('save', function(next) {

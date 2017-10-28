@@ -3,7 +3,7 @@ const Promisify = require('../promisify')
 const APP_ID = '2020770054860677'
 const APP_SECRET = '4630828c4bedc069d86fdc688d603921'
 const userImgSize = 100
-//
+const mongoose = require('mongoose')
 
 
 
@@ -66,7 +66,43 @@ const getUserChallanges = app => async fbID => {
 }
 
 
+getUserMessages = (app) => async (fbID) => {
+    const userData = await app.models.User.findOne({ fbID })
+        .populate({
+            path : "challenges",
+        })
+        .exec()
+    
+    const challenges = await app.models.Challenge.find({
+        users: userData._id
+    })
+    .exec()
+    const mappedChallenges = challenges.map((challenge) => (challenge._id))
+    //console.log(mappedChallenges)
+    const queryData = {
+        user_id : userData._id,
+        challenges : mappedChallenges
+    }
+    //console.log(queryData)
+    const messages = await app.models.Message.find({
+        $or : [{
+            challenge_id : {
+                $in : queryData.challenges
+            }
+        },
+        {
+            user_id : {
+                $eq : mongoose.Types.ObjectId(queryData.user_id)
+            }
+        }]
+    }).exec()
+
+    return messages
+
+}
+
 module.exports = (app) => ({
     login : loginUser(app),
-    getUserChallanges: getUserChallanges(app)
+    getUserChallanges: getUserChallanges(app),
+    getUserMessages : getUserMessages(app)
 })

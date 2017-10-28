@@ -6,7 +6,7 @@ module.exports = function(mongoose) {
     topic : String,
     user_id :  { type: Schema.Types.ObjectId, ref: 'User' },
     image_url : String,
-    challegne_id : {type: Schema.Types.ObjectId, ref: 'Challenge' },
+    challenge_id : {type: Schema.Types.ObjectId, ref: 'Challenge' },
     date : Date
   });
 

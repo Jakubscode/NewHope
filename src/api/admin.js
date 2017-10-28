@@ -71,7 +71,7 @@ const addChallenge = (app) => async (title, description, image, users, inviter_i
 const getChallenges = (app) => async () => { //all challenges and users in challenges that paid
 	return app.models.Challenge.find({})
 		.populate('users')
-		.populate('payments')
+		.populate('payments') // TODO populate by user
 		.exec()
 }
 const getChallenge = (app) => async (challenge_id) => { //all challenges and users in challenges that paid

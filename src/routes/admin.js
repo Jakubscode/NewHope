@@ -9,13 +9,16 @@ module.exports = (app) => {
     const token = req.token;
     const auth = await admin.auth(token)
     console.log(req.path, auth)
+    console.log("auth middleware")
     if (auth != null || req.path == '/login') {
+      console.log("auth success")
       if (auth != null) {
         req.admin_id = auth._id
       }
       next()
     }
     else {
+      console.log("auth fail")
       res.status(403)
       res.end()
     }

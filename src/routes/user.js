@@ -31,16 +31,22 @@ module.exports = (app) => {
         res.send(response)
     })
     router.post('/:userId/commitPayment', async (req,res) => {
-    		const user_id = req.body.user_id 
+    		const fbID = req.params.userId
 		    const challenge_id = req.body.challenge_id
 		    const user_challenge_id	 = req.body.user_challenge_id	   
 		    const amount = req.body.amount
-        const response = await _user.commitPayment({
-        	user_id,
+		    const data = {
+        	fbID,
         	challenge_id,
         	user_challenge_id,
         	amount
-        })
+        }
+        const response = await _user.commitPayment(data)
+        res.statusCode = 200
+        res.send(response)
+    })
+    router.get('/:userId/payments', async (req,res) => {
+    		const response = await _user.getUserPayments(req.params.userId)
         res.statusCode = 200
         res.send(response)
     })

@@ -127,13 +127,29 @@ const acceptChallenge = app => async (userId, challengeId) => {
 }
 
 const commitPayment = (app) => async (data) => {
-    const _payment = new app.models.Payment(data)
+    console.log(data)
+    console.log({fbID : data.fbID})
+    const user = await app.models.User.findOne({fbID : data.fbID}).exec()
+    console.log(user)
+    const _payment = new app.models.Payment({
+        user_id : user._id,
+        challenge_id : data.challenge_id,
+        user_challenge_id : data.user_challenge_id,
+        amount : data.amount
+    })
     const payment = await _payment.save()
     console.log(payment)
     const updatePayments = app.models.Challenge.updateOne({_id : data.challenge_id}, {$addToSet : {payments : payment._id}}).exec()
     console.log(updatePayments)
-    return updatePayments;
+    return updatePayments
+}
+const getUserPayments = (app) => async (fbID) => {
+    const user = await app.models.User.findOne({fbID})
 
+    const payments = app.models.Payment.find({user_id : user.id})
+        .populate('challenge_id')
+        .exec()
+    return payments
 }
 module.exports = (app) => ({
     login : loginUser(app),
@@ -141,5 +157,6 @@ module.exports = (app) => ({
     getUserChallenges: getUserChallenges(app),
     getChallenge: getChallenge(app),
     acceptChallenge: acceptChallenge(app),
-    commitPayment : commitPayment(app)
+    commitPayment : commitPayment(app),
+    getUserPayments : getUserPayments(app)
 })

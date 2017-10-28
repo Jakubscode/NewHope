@@ -29,8 +29,8 @@ const auth = (app) => async (token) => {
 }
 const addChallenge = (app) => async (title, description, image, users, inviter_id) => { //notify all new challenge
 	console.log(title, description, image)
-	const base64Data = image.replace(/^data:image\/png;base64,/, "");
-	const imageUrl = path.join("/uploads/challenges/", `${title}${Date.now()}.png`)
+	const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
+	const imageUrl = path.join("/uploads/challenges/", `${title}${Date.now()}.jpeg`)
 	const imagePath = path.join(__dirname , "../../", imageUrl)
 	console.log(users.constructor)
 	if (users.constructor == String) {
@@ -74,6 +74,12 @@ const getChallenges = (app) => async () => { //all challenges and users in chall
 		.populate('payments')
 		.exec()
 }
+const getChallenge = (app) => async (challenge_id) => { //all challenges and users in challenges that paid
+	return app.models.Challenge.find({_id : challenge_id})
+		.populate('users')
+		.populate('payments')
+		.exec()
+}
 const getUser = (app) => async (user_id) => { // all data , messages, payments
 	return app.models.User.findOne({_id : user_id})
 		.populate('challenges')
@@ -81,10 +87,24 @@ const getUser = (app) => async (user_id) => { // all data , messages, payments
 		.exec()
 }
 const getMessages = (app) => async () => {
-
+	return app.models.Message.find({},[], {sort : {date : -1}}).exec()
 }
-const sendMesage = (app) => async (data) => { //data.challenge_id, data.user_id, data.all, data.image
-
+const sendMessage = (app) => async (data) => { //data.challenge_id, data.user_id, data.all, data.image
+	console.log(data)
+	const base64Data = data.image.replace(/^data:image\/jpeg;base64,/, "");
+	const imageUrl = path.join("/uploads/messages/", `${Date.now() + "" + Math.random()}.jpeg`)
+	const imagePath = path.join(__dirname , "../../", imageUrl)
+	require("fs").writeFile(imagePath, base64Data, 'base64', function(err) {
+	  console.log(err);
+	});
+	const challenge = new app.models.Message({
+		topic : data.topic,
+		text : data.text,
+		image_url : imageUrl,
+		challenge_id : data.challenge_id ? data.challenge_id : null,
+		user_id : data.user_id ? data.user_id : null,
+	})
+	challenge.save()
 }
 const findUser = (app) => async(query) => {
 	console.log(query)
@@ -96,5 +116,8 @@ module.exports = (app) => ({
 	addChallenge : addChallenge(app),
 	findUser : findUser(app),
 	getChallenges : getChallenges(app),
-	getUser : getUser(app)
+	getUser : getUser(app),
+	getChallenge : getChallenge(app),
+	sendMessage : sendMessage(app),
+	getMessages : getMessages(app)
 })

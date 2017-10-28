@@ -3,16 +3,17 @@ module.exports = function(mongoose) {
 
   const Message = new Schema({
     text : String,
-    topci : String,
+    topic : String,
     user_id :  { type: Schema.Types.ObjectId, ref: 'User' },
     image_url : String,
     challegne_id : {type: Schema.Types.ObjectId, ref: 'Challenge' },
     date : Date
   });
 
-  // Message.pre('save', function(next) {
-    
-  // });
+  Message.pre('save', function(next) {
+    this.date = new Date()
+    next()
+  });
   // Message.post('save', function (next) {
     
   // })

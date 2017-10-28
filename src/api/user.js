@@ -41,7 +41,6 @@ const loginUser = (app) => async (fbID, accessToken, firebaseToken) => {
             })
         await addedUser.save()
     } else {
-
         await User.update({ fbID }, {$set: {img_url: imgData.data.url, firebaseToken, fbFriends: friends.data.map(friend => friend.id), fbToken: accessToken}}).exec()
     }
         return { imgUrl: imgData.data.url, name: userName }
@@ -147,10 +146,16 @@ const commitPayment = (app) => async (data) => {
 const getUserPayments = (app) => async (fbID) => {
     const user = await app.models.User.findOne({fbID})
 
-    const payments = app.models.Payment.find({user_id : user.id})
+    const payments = await app.models.Payment.find({user_id : user.id})
         .populate('challenge_id')
+    .lean()
         .exec()
-    return payments
+    return payments.map(payment => {
+        return {
+            ...payment,
+            challengeTitle: payment.challenge_id.title
+        }
+    })
 }
 const doChallenge = app => async (userChallengeId, image) => {
     const base64Data = image.replace(/^data:image\/jpeg;base64,/, "");
@@ -159,7 +164,6 @@ const doChallenge = app => async (userChallengeId, image) => {
     require("fs").writeFile(imagePath, base64Data, 'base64', function(err) {
       console.log(err);
     });
-
     const result =  await app.models.UserChallenge.updateOne({_id: userChallengeId}, {
         $set : {
             done: { 

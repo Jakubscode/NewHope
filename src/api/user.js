@@ -33,6 +33,18 @@ const loginUser = (app) => async (fbID, accessToken) => {
 }
 
 
+const getUserChallanges = app => async fbID => {
+    const User = app.models.User;
+    const UserChallange = app.models.UserChallange;
+    const userData = await User.findOne({ fbID })
+        .populate('challenges')
+        .exec()
+    console.log(userData);
+    // const  accepted = await Promise.all(userData.challenges.map(userChallange => userChallange.)
+}
+
+
 module.exports = (app) => ({
-    login : loginUser(app)
+    login : loginUser(app),
+    getUserChallanges: getUserChallanges(app)
 })

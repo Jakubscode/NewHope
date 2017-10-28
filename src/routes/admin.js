@@ -42,15 +42,10 @@ module.exports = (app) => {
     console.log(challenges)
     res.json(challenges)
   })
-  router.get("/challenges/:id", (req,res) => {
+  router.get("/challenges/:id", async (req,res) => {
     const id = req.params.id
-    res.json({
-      challenge: {
-          id : id,
-          name : "challenges 1",
-          description : "Lorem Ipsum"
-      }
-    })
+    const challenge = await admin.getChallenge(id)
+    res.json(challenge)
   })
   router.post("/challenges", async (req, res) => {
     const name = req.body.name
@@ -67,6 +62,20 @@ module.exports = (app) => {
   router.get("/user/:id", async (req, res) => {
     const user = await admin.getUser(req.params.id)
     res.send(user)
+  })
+  router.post("/messages/", async (req, res) => {
+    const message = await admin.sendMessage({
+      user_id : req.body.user_id,
+      challenge_id : req.body.challenge_id,
+      text : req.body.text,
+      image : req.body.image,
+      topic : req.body.topic
+    })
+    res.json(message)
+  })
+  router.get("/messages/", async (req, res) => {
+    const messages = await admin.getMessages()
+    res.json(messages)
   })
   // router.post("/newadmin", (req,res) => {
   //   console.log(app.models.Admin)

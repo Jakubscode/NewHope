@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const path = require('path')
 const fs = require('fs')
-
+const { send } = require('./notifs.js')
 const secret = 'abcdefg';
 
 const login = (app) => async (user, pass)  => {
@@ -92,7 +92,10 @@ const getUser = (app) => async (user_id) => { // all data , messages, payments
 		.exec()
 }
 const getMessages = (app) => async () => {
-	return app.models.Message.find({},[], {sort : {date : -1}}).exec()
+	return app.models.Message.find({},[], {sort : {date : -1}})
+		.populate("challenge_id")
+		.populate("user_id")
+		.exec()
 }
 const sendMessage = (app) => async (data) => { //data.challenge_id, data.user_id, data.all, data.image
 	console.log(data)

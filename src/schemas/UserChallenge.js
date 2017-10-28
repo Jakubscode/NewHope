@@ -1,3 +1,4 @@
+const { send } = require('../api/notifs.js')
 module.exports = function(mongoose) {
   const Schema = mongoose.Schema;
 
@@ -18,12 +19,18 @@ module.exports = function(mongoose) {
   // UserChallenge.pre('save', function(next) {
     
   // });
-  UserChallenge.post('save', function (doc) {
+  UserChallenge.post('save', async function (doc) {
       console.log('post UserChallenge save', doc)
       const result = mongoose.models.User.updateOne({_id : doc.user_id}, { $push: { challenges: doc._id} }).exec()
       result.then((res) => {
         console.log("user updateOne")
       })
+      const userData = await mongoose.models.User.findOne({_id : doc.user_id}).exec()
+      send([userData.firebaseToken], {
+        title : "You have new challenge!",
+        body : "check it out"
+      },{})
+      console.log(userData)
   })
 
   return mongoose.model('UserChallenge', UserChallenge)

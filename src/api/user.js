@@ -168,6 +168,7 @@ const doChallenge = app => async (userChallengeId, image) => {
             }
         }
     }).exec()
+
     return result;
 }
 module.exports = (app) => ({

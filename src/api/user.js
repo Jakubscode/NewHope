@@ -54,13 +54,14 @@ const getUserChallenges = app => async fbID => {
             path : 'challenges',
             populate : { path:'challenge_id' }
         }).populate({
-        path: 'challanges',
-        populate : {path: 'inviter_id'}
+        path: 'challenges',
+        populate : {path: 'inviter_id.user'}
     })
 
         .exec()
+    console.log(userData);
     const userChallengesData = userData.challenges.map(challenge => ({
-            challange_id: challenge.challenge_id._id,
+            challenge_id: challenge.challenge_id._id,
             _id: challenge._id,
             title: challenge.challenge_id.title,
             accepted: challenge.accepted,
@@ -120,14 +121,18 @@ const getChallenge = app => async challengeId => {
     return { challenge }
 }
 
+const acceptChallenge = app => async (userId, challengeId) => {
+    const result =  await app.models.UserChallenge.updateOne({_id: challengeId}, {$set : {accepted: true}}).exec()
+    return true;
+}
+
 const commitPayment = (app) => async (data) => {
     const _payment = new app.models.Payment(data)
     const payment = await _payment.save()
     console.log(payment)
     const updatePayments = app.models.Challenge.updateOne({_id : data.challenge_id}, {$addToSet : {payments : payment._id}}).exec()
     console.log(updatePayments)
-    return updatePayments
-
+    return updatePayments;
 
 }
 module.exports = (app) => ({
@@ -135,5 +140,6 @@ module.exports = (app) => ({
     getUserMessages : getUserMessages(app),
     getUserChallenges: getUserChallenges(app),
     getChallenge: getChallenge(app),
+    acceptChallenge: acceptChallenge(app),
     commitPayment : commitPayment(app)
 })

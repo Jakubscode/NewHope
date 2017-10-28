@@ -5,6 +5,7 @@ module.exports = function (mongoose) {
         name: String,
         fbToken: String,
         fbID: String,
+        fbFriends: [String],
         img_url: String,
         challenges: [{type: Schema.Types.ObjectId, ref: 'UserChallenge'}],
         payments: [{type: Schema.Types.ObjectId, ref: 'Payment'}],

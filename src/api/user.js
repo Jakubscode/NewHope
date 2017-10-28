@@ -114,8 +114,19 @@ getUserMessages = (app) => async (fbID) => {
 
 }
 
+const commitPayment = (app) => async (data) => {
+    const _payment = new app.models.Payment(data)
+    const payment = await _payment.save()
+    console.log(payment)
+    const updatePayments = app.models.Challenge.updateOne({_id : data.challenge_id}, {$addToSet : {payments : payment._id}}).exec()
+    console.log(updatePayments)
+    return updatePayments
+
+
+}
 module.exports = (app) => ({
     login : loginUser(app),
     getUserMessages : getUserMessages(app),
-    getUserChallenges: getUserChallenges(app)
+    getUserChallenges: getUserChallenges(app),
+    commitPayment : commitPayment(app)
 })

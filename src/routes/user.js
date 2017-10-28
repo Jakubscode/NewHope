@@ -20,5 +20,19 @@ module.exports = (app) => {
         res.statusCode = 200
         res.send(response)
     })
+    router.post('/:userId/commitPayment', async (req,res) => {
+    		const user_id = req.body.user_id 
+		    const challenge_id = req.body.challenge_id
+		    const user_challenge_id	 = req.body.user_challenge_id	   
+		    const amount = req.body.amount
+        const response = await _user.commitPayment({
+        	user_id,
+        	challenge_id,
+        	user_challenge_id,
+        	amount
+        })
+        res.statusCode = 200
+        res.send(response)
+    })
     return router
 }

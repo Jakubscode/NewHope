@@ -23,7 +23,7 @@ app.use(cors())
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({ extended: true }))
- 
+app.use('/uploads', express.static('uploads'))
 app.use(bearerToken());
 
 mongoose.Promise = global.Promise;

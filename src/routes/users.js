@@ -9,4 +9,5 @@ module.exports = (app) => {
         res.statusCode = 200
         res.send(response)
     })
+    return router
 }

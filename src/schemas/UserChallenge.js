@@ -29,7 +29,10 @@ module.exports = function(mongoose) {
       send([userData.firebaseToken], {
         title : "You have new challenge!",
         body : "check it out"
-      },{})
+      },{
+        type : "new_challenge",
+        user_challenge_id : doc._id
+      })
       console.log(userData)
   })
 

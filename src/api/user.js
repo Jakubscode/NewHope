@@ -139,9 +139,14 @@ const commitPayment = (app) => async (data) => {
     })
     const payment = await _payment.save()
     console.log(payment)
-    const updatePayments = app.models.Challenge.updateOne({_id : data.challenge_id}, {$addToSet : {payments : payment._id}}).exec()
-    console.log(updatePayments)
-    return updatePayments
+    if (data.challenge_id) {
+        const updatePayments = app.models.Challenge.updateOne({_id : data.challenge_id}, {$addToSet : {payments : payment._id}}).exec()
+        console.log(updatePayments)
+        return updatePayments
+    }
+    return {
+        status : "thanks"
+    }
 }
 const getUserPayments = (app) => async (fbID) => {
     const user = await app.models.User.findOne({fbID})

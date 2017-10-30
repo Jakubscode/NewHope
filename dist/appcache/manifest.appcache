@@ -1,0 +1,21 @@
+CACHE MANIFEST
+#ver:2017-10-30 23:24:58
+#plugin:4.8.4
+
+CACHE:
+/vendor.b982ecee.js
+/client.7b97a65d.js
+/manifest.3dced5c0.js
+/styles.cfa76806.css
+/styles.1db1a5b1.css
+/
+/favicon.png
+/hopeIT_logo.png
+/bg1.png
+/bg.png
+
+NETWORK:
+*
+
+FALLBACK:
+/ /

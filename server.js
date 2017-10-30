@@ -24,6 +24,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(bodyParser.json({ limit:'50mb', extended: true }))
 app.use('/uploads', express.static('uploads'))
+app.use('/', express.static('dist'))
 app.use(bearerToken());
 
 mongoose.Promise = global.Promise;

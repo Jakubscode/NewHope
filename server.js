@@ -58,7 +58,7 @@ app.use("/users/", routes.users(app))
 
 
 /* MONGO CONNECT */
-const port = parseInt(process.argv[2]) == process.argv[2]? process.argv[2] :  4000
+const port = process.env.PORT || 3000
 console.log(port)
 mongoose.connect('mongodb://admin:TomeczekJestSuper1@ds137435.mlab.com:37435/newhope', { useMongoClient: true })
     .then((db) => {
